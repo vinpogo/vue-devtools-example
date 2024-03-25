@@ -1,8 +1,26 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
+import { enqueue, getAsyncFn } from './promiseQueue'
 import { useDeepStore } from './stores/deep'
 useDeepStore()
+
+const id = (function* () {
+  let id = 0
+  while (true) {
+    yield id++
+  }
+})()
+
+window.addEventListener('keydown', (ev) => {
+  if (ev.key !== 'q') return
+  const count = Math.max(Math.round(Math.random() * 10), 1)
+  fillQueue(count)
+})
+
+function fillQueue(count: number) {
+  for (let i = 0; i < count; i++) enqueue(getAsyncFn(id.next().value))
+}
 </script>
 
 <template>
